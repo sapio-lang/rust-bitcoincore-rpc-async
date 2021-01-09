@@ -1,11 +1,12 @@
 [package]
-name = "integration_test"
+name = "integration_test_async"
 version = "0.1.0"
-authors = ["Steven Roose <steven@stevenroose.org>"]
+authors = ["Jeremy Rubin <j@rubin.io>", "Steven Roose <steven@stevenroose.org>"]
 edition="2018"
+publish=false
 
 [dependencies]
-bitcoincore-rpc = { path = "../client" }
+bitcoincore-rpc-async = { path = "../client" }
 bitcoin = { version = "0.25", features = [ "use-serde", "rand" ] }
 lazy_static = "1.4.0"
 log = "0.4"

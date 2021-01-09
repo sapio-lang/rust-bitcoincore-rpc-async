@@ -1,21 +1,22 @@
 [package]
-name = "bitcoincore-rpc-json"
-version = "0.12.0"
+name = "bitcoincore-rpc-json-async"
+version = "2.12.0"
 authors = [
+    "Jeremy Rubin <j@rubin.io>",
     "Steven Roose <steven@stevenroose.org>",
     "Jean Pierre Dudey <jeandudey@hotmail.com>",
     "Dawid Ciężarkiewicz <dpc@dpc.pw>"
 ]
 license = "CC0-1.0"
-homepage = "https://github.com/rust-bitcoin/rust-bitcoincore-rpc/"
-repository = "https://github.com/rust-bitcoin/rust-bitcoincore-rpc/"
+homepage = "https://github.com/jeremyrubin/rust-bitcoincore-rpc-async/"
+repository = "https://github.com/jeremyrubin/rust-bitcoincore-rpc-async/"
 description = "JSON-enabled type structs for bitcoincore-rpc crate."
-keywords = [ "crypto", "bitcoin", "bitcoin-core", "rpc" ]
+keywords = [ "crypto", "bitcoin", "bitcoin-core", "rpc", "asynchronous" ]
 readme = "README.md"
 edition="2018"
 
 [lib]
-name = "bitcoincore_rpc_json"
+name = "bitcoincore_rpc_json_async"
 path = "src/lib.rs"
 
 [dependencies]

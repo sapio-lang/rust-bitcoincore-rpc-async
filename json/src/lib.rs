@@ -13,9 +13,6 @@
 //! This is a client library for the Bitcoin Core JSON-RPC API.
 //!
 
-#![crate_name = "bitcoincore_rpc_json"]
-#![crate_type = "rlib"]
-
 
 use std::collections::HashMap;
 pub use bitcoin;

@@ -14,15 +14,13 @@
 //!
 
 
-#![crate_name = "bitcoincore_rpc"]
 use  log;
 
 use  serde;
 use  serde_json;
 
+pub use  bitcoincore_rpc_json_async as json;
 pub use  jsonrpc_async as jsonrpc;
-pub use  bitcoincore_rpc_json;
-pub use bitcoincore_rpc_json as json;
 pub use json::bitcoin;
 
 mod client;

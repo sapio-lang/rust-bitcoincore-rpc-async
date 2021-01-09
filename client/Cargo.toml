@@ -1,25 +1,26 @@
 [package]
-name = "bitcoincore-rpc"
-version = "0.12.0"
+name = "bitcoincore-rpc-async"
+version = "2.12.0"
 authors = [
+    "Jeremy Rubin <j@rubin.io>",
     "Steven Roose <steven@stevenroose.org>",
     "Jean Pierre Dudey <jeandudey@hotmail.com>",
     "Dawid Ciężarkiewicz <dpc@dpc.pw>"
 ]
 edition="2018"
 license = "CC0-1.0"
-homepage = "https://github.com/rust-bitcoin/rust-bitcoincore-rpc/"
-repository = "https://github.com/rust-bitcoin/rust-bitcoincore-rpc/"
+homepage = "https://github.com/jeremyrubin/rust-bitcoincore-rpc-async/"
+repository = "https://github.com/jeremyrubin/rust-bitcoincore-rpc-async/"
 description = "RPC client library for the Bitcoin Core JSON-RPC API."
-keywords = [ "crypto", "bitcoin", "bitcoin-core", "rpc" ]
+keywords = [ "crypto", "bitcoin", "bitcoin-core", "rpc", "asynchronous" ]
 readme = "README.md"
 
 [lib]
-name = "bitcoincore_rpc"
+name = "bitcoincore_rpc_async"
 path = "src/lib.rs"
 
 [dependencies]
-bitcoincore-rpc-json = { version = "0.12.0", path = "../json"}
+bitcoincore-rpc-json-async = { version = "2.12.0", path = "../json"}
 async-trait = "0.1.42"
 log = "0.4.5"
 jsonrpc-async = "2.0.1"

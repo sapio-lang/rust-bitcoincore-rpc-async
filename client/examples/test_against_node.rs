@@ -10,9 +10,9 @@
 
 //! A very simple example used as a self-test of this library against a Bitcoin
 //! Core node.
-use bitcoincore_rpc;
+use bitcoincore_rpc_async;
 
-use bitcoincore_rpc::{bitcoin, Auth, Client, Error, RpcApi};
+use bitcoincore_rpc_async::{bitcoin, Auth, Client, Error, RpcApi};
 use tokio;
 
 async fn main_result() -> Result<(), Error> {

@@ -8,13 +8,13 @@
 // If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 //
 
-use bitcoincore_rpc;
+use bitcoincore_rpc_async;
 use jsonrpc_async as jsonrpc;
 use serde;
 use serde_json;
 use async_trait::async_trait;
 
-use bitcoincore_rpc::{Client, Error, Result, RpcApi};
+use bitcoincore_rpc_async::{Client, Error, Result, RpcApi};
 
 pub struct RetryClient {
     client: Client,

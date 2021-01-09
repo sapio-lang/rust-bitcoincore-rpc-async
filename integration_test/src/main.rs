@@ -11,7 +11,6 @@
 #![deny(unused)]
 
 use bitcoin;
-use bitcoincore_rpc;
 #[macro_use]
 extern crate lazy_static;
 use log;
@@ -19,6 +18,7 @@ use tokio;
 
 use std::collections::HashMap;
 
+use bitcoincore_rpc_async as bitcoincore_rpc;
 use bitcoincore_rpc::json;
 use bitcoincore_rpc::jsonrpc::error::Error as JsonRpcError;
 use bitcoincore_rpc::{Auth, Client, Error, RpcApi};
@@ -31,7 +31,7 @@ use bitcoin::{
     Address, Amount, Network, OutPoint, PrivateKey, Script, SigHashType, SignedAmount, Transaction,
     TxIn, TxOut, Txid,
 };
-use bitcoincore_rpc::bitcoincore_rpc_json::ScanTxOutRequest;
+use bitcoincore_rpc::json::ScanTxOutRequest;
 
 lazy_static! {
     static ref SECP: secp256k1::Secp256k1<secp256k1::All> = secp256k1::Secp256k1::new();

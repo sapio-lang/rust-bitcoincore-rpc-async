@@ -15,8 +15,8 @@ use std::path::PathBuf;
 use std::{fmt, result};
 use serde_json::value::RawValue;
 
-use bitcoincore_rpc_json::bitcoin;
-use bitcoincore_rpc_json as json;
+use bitcoincore_rpc_json_async::bitcoin;
+use bitcoincore_rpc_json_async as json;
 use jsonrpc_async as jsonrpc;
 use serde::*;
 use serde_json;
