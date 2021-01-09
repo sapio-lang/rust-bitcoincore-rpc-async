@@ -13,19 +13,15 @@
 //! This is a client library for the Bitcoin Core JSON-RPC API.
 //!
 
+
 #![crate_name = "bitcoincore_rpc"]
-#![crate_type = "rlib"]
+use  log;
 
-#[macro_use]
-extern crate log;
-#[allow(unused)]
-#[macro_use] // `macro_use` is needed for v1.24.0 compilation.
-extern crate serde;
-extern crate serde_json;
+use  serde;
+use  serde_json;
 
-pub extern crate jsonrpc;
-
-pub extern crate bitcoincore_rpc_json;
+pub use  jsonrpc_async as jsonrpc;
+pub use  bitcoincore_rpc_json;
 pub use bitcoincore_rpc_json as json;
 pub use json::bitcoin;
 
