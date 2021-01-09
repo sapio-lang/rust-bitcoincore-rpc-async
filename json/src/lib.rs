@@ -16,13 +16,9 @@
 #![crate_name = "bitcoincore_rpc_json"]
 #![crate_type = "rlib"]
 
-pub extern crate bitcoin;
-#[allow(unused)]
-#[macro_use] // `macro_use` is needed for v1.24.0 compilation.
-extern crate serde;
-extern crate serde_json;
 
 use std::collections::HashMap;
+pub use bitcoin;
 
 use bitcoin::consensus::encode;
 use bitcoin::hashes::hex::{FromHex, ToHex};
@@ -177,7 +173,7 @@ pub struct GetBlockResult {
     pub weight: usize,
     pub height: usize,
     pub version: i32,
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub version_hex: Option<Vec<u8>>,
     pub merkleroot: bitcoin::TxMerkleNode,
     pub tx: Vec<bitcoin::Txid>,
@@ -186,7 +182,7 @@ pub struct GetBlockResult {
     pub nonce: u32,
     pub bits: String,
     pub difficulty: f64,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub chainwork: Vec<u8>,
     pub n_tx: usize,
     pub previousblockhash: Option<bitcoin::BlockHash>,
@@ -200,7 +196,7 @@ pub struct GetBlockHeaderResult {
     pub confirmations: u32,
     pub height: usize,
     pub version: i32,
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub version_hex: Option<Vec<u8>>,
     #[serde(rename = "merkleroot")]
     pub merkle_root: bitcoin::TxMerkleNode,
@@ -210,7 +206,7 @@ pub struct GetBlockHeaderResult {
     pub nonce: u32,
     pub bits: String,
     pub difficulty: f64,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub chainwork: Vec<u8>,
     pub n_tx: usize,
     #[serde(rename = "previousblockhash")]
@@ -240,7 +236,7 @@ pub struct GetMiningInfoResult {
 #[serde(rename_all = "camelCase")]
 pub struct GetRawTransactionResultVinScriptSig {
     pub asm: String,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub hex: Vec<u8>,
 }
 
@@ -255,7 +251,7 @@ impl GetRawTransactionResultVinScriptSig {
 pub struct GetRawTransactionResultVin {
     pub sequence: u32,
     /// The raw scriptSig in case of a coinbase tx.
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub coinbase: Option<Vec<u8>>,
     /// Not provided for coinbase txs.
     pub txid: Option<bitcoin::Txid>,
@@ -281,7 +277,7 @@ impl GetRawTransactionResultVin {
 #[serde(rename_all = "camelCase")]
 pub struct GetRawTransactionResultVoutScriptPubKey {
     pub asm: String,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub hex: Vec<u8>,
     pub req_sigs: Option<usize>,
     #[serde(rename = "type")]
@@ -309,7 +305,7 @@ pub struct GetRawTransactionResultVout {
 pub struct GetRawTransactionResult {
     #[serde(rename = "in_active_chain")]
     pub in_active_chain: Option<bool>,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub hex: Vec<u8>,
     pub txid: bitcoin::Txid,
     pub hash: bitcoin::Wtxid,
@@ -328,7 +324,7 @@ pub struct GetRawTransactionResult {
 #[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
 pub struct GetBlockFilterResult {
     pub header: bitcoin::FilterHash,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub filter: Vec<u8>,
 }
 
@@ -415,7 +411,7 @@ pub struct GetTransactionResult {
     #[serde(default, with = "bitcoin::util::amount::serde::as_btc::opt")]
     pub fee: Option<SignedAmount>,
     pub details: Vec<GetTransactionResultDetail>,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub hex: Vec<u8>,
 }
 
@@ -526,7 +522,7 @@ pub struct SignRawTransactionResultError {
 #[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SignRawTransactionResult {
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub hex: Vec<u8>,
     pub complete: bool,
     pub errors: Option<Vec<SignRawTransactionResultError>>,
@@ -618,11 +614,11 @@ pub struct GetAddressInfoResultEmbedded {
     #[serde(rename = "is_witness")]
     pub is_witness: Option<bool>,
     pub witness_version: Option<u32>,
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub witness_program: Vec<u8>,
     pub script: Option<ScriptPubkeyType>,
     /// The redeemscript for the p2sh address.
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub hex: Option<Vec<u8>>,
     pub pubkeys: Option<Vec<PublicKey>>,
     #[serde(rename = "sigsrequired")]
@@ -670,11 +666,11 @@ pub struct GetAddressInfoResult {
     #[serde(rename = "iswitness")]
     pub is_witness: Option<bool>,
     pub witness_version: Option<u32>,
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub witness_program: Option<Vec<u8>>,
     pub script: Option<ScriptPubkeyType>,
     /// The redeemscript for the p2sh address.
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub hex: Option<Vec<u8>>,
     pub pubkeys: Option<Vec<PublicKey>>,
     #[serde(rename = "sigsrequired")]
@@ -719,7 +715,7 @@ pub struct GetBlockchainInfoResult {
     #[serde(rename = "initialblockdownload")]
     pub initial_block_download: bool,
     /// Total amount of work in active chain, in hexadecimal
-    #[serde(rename = "chainwork", with = "::serde_hex")]
+    #[serde(rename = "chainwork", with = "serde_hex")]
     pub chain_work: Vec<u8>,
     /// The estimated size of the block and undo files on disk
     pub size_on_disk: u64,
@@ -1052,7 +1048,7 @@ pub struct WalletCreateFundedPsbtOptions {
 #[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
 pub struct FinalizePsbtResult {
     pub psbt: Option<String>,
-    #[serde(default, with = "::serde_hex::opt")]
+    #[serde(default, with = "serde_hex::opt")]
     pub hex: Option<Vec<u8>>,
     pub complete: bool,
 }
@@ -1140,7 +1136,7 @@ pub struct FundRawTransactionOptions {
 #[derive(Deserialize, Clone, PartialEq, Eq, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct FundRawTransactionResult {
-    #[serde(with = "::serde_hex")]
+    #[serde(with = "serde_hex")]
     pub hex: Vec<u8>,
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
     pub fee: Amount,
