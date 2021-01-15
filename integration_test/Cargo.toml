@@ -7,7 +7,7 @@ publish=false
 
 [dependencies]
 bitcoincore-rpc-async = { path = "../client" }
-bitcoin = { version = "0.25", features = [ "use-serde", "rand" ] }
+bitcoin = { version = "0.26", features = [ "use-serde", "rand" ] }
 lazy_static = "1.4.0"
 log = "0.4"
 tokio = { version = "1", features = ["full"] }
