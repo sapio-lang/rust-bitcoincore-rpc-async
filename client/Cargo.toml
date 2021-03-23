@@ -1,6 +1,6 @@
 [package]
 name = "bitcoincore-rpc-async"
-version = "3.0.0"
+version = "3.0.1"
 authors = [
     "Jeremy Rubin <j@rubin.io>",
     "Steven Roose <steven@stevenroose.org>",
@@ -20,10 +20,10 @@ name = "bitcoincore_rpc_async"
 path = "src/lib.rs"
 
 [dependencies]
-bitcoincore-rpc-json-async = { version = "3.0.0", path = "../json"}
+bitcoincore-rpc-json-async = { version = "3.0.1", path = "../json"}
 async-trait = "0.1.42"
 log = "0.4.5"
-jsonrpc-async = {version="2.0.1", path="../../rust-jsonrpc"}
+jsonrpc-async = {version="2.0.1"}
 
 # Used for deserialization of JSON.
 serde = "1"
