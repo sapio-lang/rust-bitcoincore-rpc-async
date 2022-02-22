@@ -1,6 +1,6 @@
 [package]
 name = "bitcoincore-rpc-async"
-version = "4.0.0-alpha.0"
+version = "4.0.1-alpha.0"
 authors = [
     "Jeremy Rubin <j@rubin.io>",
     "Steven Roose <steven@stevenroose.org>",
@@ -23,7 +23,7 @@ path = "src/lib.rs"
 bitcoincore-rpc-json-async = { version = "4.0.0-alpha.0", path = "../json"}
 async-trait = "0.1.42"
 log = "0.4.5"
-jsonrpc-async = {version="2.0.1"}
+jsonrpc-async = {version="4.0.0-alpha.0"}
 
 # Used for deserialization of JSON.
 serde = "1"
