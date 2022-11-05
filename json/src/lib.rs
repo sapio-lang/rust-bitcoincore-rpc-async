@@ -269,6 +269,7 @@ pub struct GetBlockStatsResult {
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
     total_fee: Amount,
     txs: usize,
+    #[serde(rename = "utxo_increase")]
     utxo_increase: usize,
     utxo_size_inc: usize,
 }
