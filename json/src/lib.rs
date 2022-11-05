@@ -256,6 +256,7 @@ pub struct GetBlockStatsResult {
     sw_total_size: usize,
     #[serde(rename = "swtotal_weight")]
     sw_total_weight: usize,
+    #[serde(rename = "swtxs")]
     sw_txs: usize,
     time: usize,
     total_out: usize,
