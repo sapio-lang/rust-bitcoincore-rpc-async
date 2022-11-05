@@ -361,9 +361,9 @@ pub trait RpcApi: Sized {
         block_height: Option<usize>,
     ) -> Result<json::GetBlockStatsResult> {
         if let Some(hash) = block_hash {
-            self.call("getblockstats", &[into_json(hash)?, empty_arr()]).await
+            self.call("getblockstats", &[into_json(hash)?]).await
         } else if let Some(height) = block_height {
-            self.call("getblockstats", &[into_json(height)?, empty_arr()]).await
+            self.call("getblockstats", &[into_json(height)?]).await
         } else {
             panic!("TODO: Which error to use?")
         }
