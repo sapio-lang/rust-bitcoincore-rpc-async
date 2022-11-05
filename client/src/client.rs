@@ -353,6 +353,22 @@ pub trait RpcApi: Sized {
         self.call("getblockheader", &[into_json(hash)?, true.into()]).await
     }
 
+    /// Compute per block statistics for a given window. All amounts are in satoshis.
+    /// https://developer.bitcoin.org/reference/rpc/getblockstats.html
+    async fn get_block_stats(
+        &self,
+        block_hash: Option<&bitcoin::BlockHash>,
+        block_height: Option<usize>,
+    ) -> Result<json::GetBlockStatsResult> {
+        if let Some(hash) = block_hash {
+            self.call("getblockstats", &[into_json(hash)?, true.into()]).await
+        } else if let Some(height) = block_height {
+            self.call("getblockstats", &[into_json(height)?, true.into()]).await
+        } else {
+            self.call("getblockstats", &[]).await
+        }
+    }
+
     async fn get_mining_info(&self) -> Result<json::GetMiningInfoResult> {
         self.call("getmininginfo", &[]).await
     }

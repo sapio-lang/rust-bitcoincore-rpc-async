@@ -13,9 +13,8 @@
 //! This is a client library for the Bitcoin Core JSON-RPC API.
 //!
 
-
-use std::collections::HashMap;
 pub use bitcoin;
+use std::collections::HashMap;
 
 use bitcoin::consensus::encode;
 use bitcoin::hashes::hex::{FromHex, ToHex};
@@ -210,6 +209,93 @@ pub struct GetBlockHeaderResult {
     pub previous_block_hash: Option<bitcoin::BlockHash>,
     #[serde(rename = "nextblockhash")]
     pub next_block_hash: Option<bitcoin::BlockHash>,
+}
+
+/// `getblockstats` RPC call.
+/// https://developer.bitcoin.org/reference/rpc/getblockstats.html
+#[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetBlockStatsResult {
+    /// Average fee in the block
+    #[serde(rename = "avgfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    avg_fee: Amount,
+    /// Average feerate (in satoshis per virtual byte)
+    #[serde(rename = "avgfeerate")]
+    avg_fee_rate: usize,
+    /// Average transaction size
+    #[serde(rename = "avgtxsize")]
+    avg_tx_size: u64,
+    ///  The block hash (to check for potential reorgs)
+    #[serde(rename = "blockhash")]
+    block_hash: bitcoin::BlockHash,
+    ///  Feerates at the 10th, 25th, 50th, 75th, and 90th percentile weight unit (in satoshis per
+    ///  virtual byte)
+    #[serde(rename = "feerate_percentiles")]
+    fee_rate_percentiles: [u8; 5],
+    ///  The height of the block
+    height: usize,
+    ///  The number of inputs (excluding coinbase)
+    ins: usize,
+    ///  Maximum fee in the block
+    #[serde(rename = "maxfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    max_fee: Amount,
+    ///  Maximum feerate (in satoshis per virtual byte)
+    #[serde(rename = "maxfeerate")]
+    max_fee_rate: usize,
+    ///  Maximum transaction size
+    #[serde(rename = "maxtxsize")]
+    max_tx_size: usize,
+    ///  Truncated median fee in the block
+    #[serde(rename = "medianfee")]
+    median_fee: usize,
+    ///  The block median time past
+    #[serde(rename = "mediantime")]
+    median_time: usize,
+    ///  Truncated median transaction size
+    #[serde(rename = "mediantxsize")]
+    median_tx_size: usize,
+    ///  Minimum fee in the block
+    #[serde(rename = "minfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    min_fee: Amount,
+    ///  Minimum feerate (in satoshis per virtual byte)
+    #[serde(rename = "minfeerate")]
+    min_fee_rate: usize,
+    ///  Minimum transaction size
+    #[serde(rename = "mintxsize")]
+    min_tx_size: usize,
+    ///  The number of outputs
+    outs: usize,
+    ///  The block subsidy
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    subsidy: Amount,
+    ///  Total size of all segwit transactions
+    #[serde(rename = "swtotal_size")]
+    sw_total_size: usize,
+    ///  Total weight of all segwit transactions
+    #[serde(rename = "swtotal_weight")]
+    sw_total_weight: usize,
+    ///  The number of segwit transactions
+    sw_txs: usize,
+    ///  The block time
+    time: usize,
+    ///  Total amount in all outputs (excluding coinbase and thus reward [ie subsidy + totalfee])
+    total_out: usize,
+    ///  Total size of all non-coinbase transactions
+    total_size: usize,
+    ///  Total weight of all non-coinbase transactions
+    total_weight: usize,
+    ///  The fee total
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    total_fee: Amount,
+    ///  The number of transactions (including coinbase)
+    txs: usize,
+    ///  The increase/decrease in the number of unspent outputs
+    utxo_increase: usize,
+    ///  The increase/decrease in size for the
+    utxo_size_inc: usize,
 }
 
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
