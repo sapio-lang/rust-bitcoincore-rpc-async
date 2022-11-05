@@ -263,6 +263,7 @@ pub struct GetBlockStatsResult {
     total_out: usize,
     #[serde(rename = "total_size")]
     total_size: usize,
+    #[serde(rename = "total_weight")]
     total_weight: usize,
     #[serde(rename = "totalfee")]
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
