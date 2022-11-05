@@ -222,10 +222,11 @@ pub struct GetBlockStatsResult {
     pub avg_fee: Amount,
     /// Average feerate (in satoshis per virtual byte)
     #[serde(rename = "avgfeerate")]
-    pub avg_fee_rate: usize,
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub avg_fee_rate: Amount,
     /// Average transaction size
     #[serde(rename = "avgtxsize")]
-    pub avg_tx_size: u64,
+    pub avg_tx_size: u32,
     /// The block hash (to check for potential reorgs)
     #[serde(rename = "blockhash")]
     pub block_hash: bitcoin::BlockHash,
@@ -234,7 +235,7 @@ pub struct GetBlockStatsResult {
     #[serde(rename = "feerate_percentiles")]
     pub fee_rate_percentiles: [u8; 5],
     /// The height of the block
-    pub height: usize,
+    pub height: u64,
     /// The number of inputs (excluding coinbase)
     pub ins: usize,
     /// Maximum fee in the block
@@ -243,29 +244,32 @@ pub struct GetBlockStatsResult {
     pub max_fee: Amount,
     /// Maximum feerate (in satoshis per virtual byte)
     #[serde(rename = "maxfeerate")]
-    pub max_fee_rate: usize,
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub max_fee_rate: Amount,
     /// Maximum transaction size
     #[serde(rename = "maxtxsize")]
-    pub max_tx_size: usize,
+    pub max_tx_size: u32,
     /// Truncated median fee in the block
     #[serde(rename = "medianfee")]
-    pub median_fee: usize,
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub median_fee: Amount,
     /// The block median time past
     #[serde(rename = "mediantime")]
-    pub median_time: usize,
+    pub median_time: u64,
     /// Truncated median transaction size
     #[serde(rename = "mediantxsize")]
-    pub median_tx_size: usize,
+    pub median_tx_size: u32,
     /// Minimum fee in the block
     #[serde(rename = "minfee")]
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
     pub min_fee: Amount,
     /// Minimum feerate (in satoshis per virtual byte)
     #[serde(rename = "minfeerate")]
-    pub min_fee_rate: usize,
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub min_fee_rate: Amount,
     /// Minimum transaction size
     #[serde(rename = "mintxsize")]
-    pub min_tx_size: usize,
+    pub min_tx_size: u32,
     /// The number of outputs
     pub outs: usize,
     /// The block subsidy
@@ -281,10 +285,11 @@ pub struct GetBlockStatsResult {
     #[serde(rename = "swtxs")]
     pub sw_txs: usize,
     /// The block time
-    pub time: usize,
+    pub time: u64,
     /// Total amount in all outputs (excluding coinbase and thus reward [ie subsidy + totalfee])
     #[serde(rename = "total_out")]
-    pub total_out: usize,
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub total_out: Amount,
     /// Total size of all non-coinbase transactions
     #[serde(rename = "total_size")]
     pub total_size: usize,
@@ -299,10 +304,10 @@ pub struct GetBlockStatsResult {
     pub txs: usize,
     /// The increase/decrease in the number of unspent outputs
     #[serde(rename = "utxo_increase")]
-    pub utxo_increase: usize,
+    pub utxo_increase: i32,
     /// The increase/decrease in size for the
     #[serde(rename = "utxo_size_inc")]
-    pub utxo_size_inc: usize,
+    pub utxo_size_inc: i32,
 }
 
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
