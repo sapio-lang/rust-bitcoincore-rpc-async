@@ -365,7 +365,7 @@ pub trait RpcApi: Sized {
         } else if let Some(height) = block_height {
             self.call("getblockstats", &[into_json(height)?]).await
         } else {
-            self.call("getblockstats", &[]).await
+            panic!("TODO: Which error to use?")
         }
     }
 
