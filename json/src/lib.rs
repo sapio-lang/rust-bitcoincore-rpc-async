@@ -219,90 +219,90 @@ pub struct GetBlockStatsResult {
     /// Average fee in the block
     #[serde(rename = "avgfee")]
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
-    avg_fee: Amount,
+    pub avg_fee: Amount,
     /// Average feerate (in satoshis per virtual byte)
     #[serde(rename = "avgfeerate")]
-    avg_fee_rate: usize,
+    pub avg_fee_rate: usize,
     /// Average transaction size
     #[serde(rename = "avgtxsize")]
-    avg_tx_size: u64,
+    pub avg_tx_size: u64,
     /// The block hash (to check for potential reorgs)
     #[serde(rename = "blockhash")]
-    block_hash: bitcoin::BlockHash,
+    pub block_hash: bitcoin::BlockHash,
     /// Feerates at the 10th, 25th, 50th, 75th, and 90th percentile weight unit (in satoshis per
     /// virtual byte)
     #[serde(rename = "feerate_percentiles")]
-    fee_rate_percentiles: [u8; 5],
+    pub fee_rate_percentiles: [u8; 5],
     /// The height of the block
-    height: usize,
+    pub height: usize,
     /// The number of inputs (excluding coinbase)
-    ins: usize,
+    pub ins: usize,
     /// Maximum fee in the block
     #[serde(rename = "maxfee")]
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
-    max_fee: Amount,
+    pub max_fee: Amount,
     /// Maximum feerate (in satoshis per virtual byte)
     #[serde(rename = "maxfeerate")]
-    max_fee_rate: usize,
+    pub max_fee_rate: usize,
     /// Maximum transaction size
     #[serde(rename = "maxtxsize")]
-    max_tx_size: usize,
+    pub max_tx_size: usize,
     /// Truncated median fee in the block
     #[serde(rename = "medianfee")]
-    median_fee: usize,
+    pub median_fee: usize,
     /// The block median time past
     #[serde(rename = "mediantime")]
-    median_time: usize,
+    pub median_time: usize,
     /// Truncated median transaction size
     #[serde(rename = "mediantxsize")]
-    median_tx_size: usize,
+    pub median_tx_size: usize,
     /// Minimum fee in the block
     #[serde(rename = "minfee")]
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
-    min_fee: Amount,
+    pub min_fee: Amount,
     /// Minimum feerate (in satoshis per virtual byte)
     #[serde(rename = "minfeerate")]
-    min_fee_rate: usize,
+    pub min_fee_rate: usize,
     /// Minimum transaction size
     #[serde(rename = "mintxsize")]
-    min_tx_size: usize,
+    pub min_tx_size: usize,
     /// The number of outputs
-    outs: usize,
+    pub outs: usize,
     /// The block subsidy
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
-    subsidy: Amount,
+    pub subsidy: Amount,
     /// Total size of all segwit transactions
     #[serde(rename = "swtotal_size")]
-    sw_total_size: usize,
+    pub sw_total_size: usize,
     /// Total weight of all segwit transactions
     #[serde(rename = "swtotal_weight")]
-    sw_total_weight: usize,
+    pub sw_total_weight: usize,
     /// The number of segwit transactions
     #[serde(rename = "swtxs")]
-    sw_txs: usize,
+    pub sw_txs: usize,
     /// The block time
-    time: usize,
+    pub time: usize,
     /// Total amount in all outputs (excluding coinbase and thus reward [ie subsidy + totalfee])
     #[serde(rename = "total_out")]
-    total_out: usize,
+    pub total_out: usize,
     /// Total size of all non-coinbase transactions
     #[serde(rename = "total_size")]
-    total_size: usize,
+    pub total_size: usize,
     /// Total weight of all non-coinbase transactions
     #[serde(rename = "total_weight")]
-    total_weight: usize,
+    pub total_weight: usize,
     /// The fee total
     #[serde(rename = "totalfee")]
     #[serde(with = "bitcoin::util::amount::serde::as_btc")]
-    total_fee: Amount,
+    pub total_fee: Amount,
     /// The number of transactions (including coinbase)
-    txs: usize,
+    pub txs: usize,
     /// The increase/decrease in the number of unspent outputs
     #[serde(rename = "utxo_increase")]
-    utxo_increase: usize,
+    pub utxo_increase: usize,
     /// The increase/decrease in size for the
     #[serde(rename = "utxo_size_inc")]
-    utxo_size_inc: usize,
+    pub utxo_size_inc: usize,
 }
 
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
