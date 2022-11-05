@@ -259,7 +259,7 @@ pub struct GetBlockStatsResult {
     #[serde(rename = "swtxs")]
     sw_txs: usize,
     time: usize,
-    total_out: usize,
+    total_out: u64,
     total_size: usize,
     total_weight: usize,
     #[serde(rename = "totalfee")]
