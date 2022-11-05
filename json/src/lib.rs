@@ -271,6 +271,7 @@ pub struct GetBlockStatsResult {
     txs: usize,
     #[serde(rename = "utxo_increase")]
     utxo_increase: usize,
+    #[serde(rename = "utxo_size_inc")]
     utxo_size_inc: usize,
 }
 
