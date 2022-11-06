@@ -288,8 +288,8 @@ pub struct GetBlockStatsResult {
     pub time: u64,
     /// Total amount in all outputs (excluding coinbase and thus reward [ie subsidy + totalfee])
     #[serde(rename = "total_out")]
-    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
-    pub total_out: Amount,
+    // #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub total_out: usize,
     /// Total size of all non-coinbase transactions
     #[serde(rename = "total_size")]
     pub total_size: usize,
