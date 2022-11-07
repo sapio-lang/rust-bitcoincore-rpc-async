@@ -18,7 +18,6 @@ use bitcoincore_rpc_json_async::bitcoin;
 use bitcoincore_rpc_json_async as json;
 use jsonrpc_async as jsonrpc;
 use serde::*;
-use serde_json;
 
 use bitcoin::hashes::hex::{FromHex, ToHex};
 use bitcoin::secp256k1::ecdsa::Signature;
@@ -207,7 +206,7 @@ impl Auth {
                 let mut file = File::open(path)?;
                 let mut contents = String::new();
                 file.read_to_string(&mut contents)?;
-                let mut split = contents.splitn(2, ":");
+                let mut split = contents.splitn(2, ':');
                 let u = split.next().ok_or(Error::InvalidCookieFile)?.into();
                 let p = split.next().ok_or(Error::InvalidCookieFile)?.into();
                 Ok(Some((u, p)))
@@ -233,7 +232,7 @@ pub trait RpcApi: Sized {
     where T: Sync + Send ,
         <T as queryable::Queryable<Self>>::Id : Sync + Send
     {
-        T::query(&self, &id).await
+        T::query(self, id).await
     }
 
     async fn get_network_info(&self) -> Result<json::GetNetworkInfoResult> {
@@ -390,7 +389,7 @@ pub trait RpcApi: Sized {
                         type_: json::SoftforkType::Buried,
                         bip9: None,
                         height: None,
-                        active: active,
+                        active,
                     },
                 );
             }
@@ -656,7 +655,7 @@ pub trait RpcApi: Sized {
     /// To unlock, use [unlock_unspent].
     async fn lock_unspent(&self, outputs: &[OutPoint]) -> Result<bool> {
         let outputs: Vec<_> = outputs
-            .into_iter()
+            .iter()
             .map(|o| serde_json::to_value(JsonOutPoint::from(*o)).unwrap())
             .collect();
         self.call("lockunspent", &[false.into(), outputs.into()]).await
@@ -664,7 +663,7 @@ pub trait RpcApi: Sized {
 
     async fn unlock_unspent(&self, outputs: &[OutPoint]) -> Result<bool> {
         let outputs: Vec<_> = outputs
-            .into_iter()
+            .iter()
             .map(|o| serde_json::to_value(JsonOutPoint::from(*o)).unwrap())
             .collect();
         self.call("lockunspent", &[true.into(), outputs.into()]).await
@@ -791,7 +790,7 @@ pub trait RpcApi: Sized {
     where R: Sync + Send
     {
         let hexes: Vec<serde_json::Value> =
-            rawtxs.to_vec().into_iter().map(|r| r.raw_hex().into()).collect();
+            rawtxs.iter().cloned().map(|r| r.raw_hex().into()).collect();
         self.call("testmempoolaccept", &[hexes.into()]).await
     }
 
@@ -1074,7 +1073,7 @@ impl Client {
     /// Create a new Client.
     pub fn from_jsonrpc(client: jsonrpc::client::Client) -> Client {
         Client {
-            client: client,
+            client,
         }
     }
 

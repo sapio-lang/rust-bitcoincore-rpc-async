@@ -14,7 +14,6 @@ use super::bitcoin;
 use bitcoin::hashes::hex;
 use bitcoin::secp256k1;
 use jsonrpc_async as jsonrpc;
-use serde_json;
 
 /// The error type for errors produced in this library.
 #[derive(Debug)]
@@ -36,7 +35,6 @@ impl From<jsonrpc::error::Error> for Error {
         Error::JsonRpc(e)
     }
 }
-
 
 impl From<hex::Error> for Error {
     fn from(e: hex::Error) -> Error {

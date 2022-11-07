@@ -10,11 +10,8 @@
 
 #![deny(unused)]
 
-use bitcoin;
 #[macro_use]
 extern crate lazy_static;
-use log;
-use tokio;
 
 use std::collections::HashMap;
 
@@ -96,17 +93,17 @@ fn sbtc<F: Into<f64>>(btc: F) -> SignedAmount {
 }
 
 fn get_rpc_url() -> String {
-    return std::env::var("RPC_URL").expect("RPC_URL must be set");
+    std::env::var("RPC_URL").expect("RPC_URL must be set")
 }
 
 fn get_auth() -> bitcoincore_rpc::Auth {
     if let Ok(cookie) = std::env::var("RPC_COOKIE") {
-        return Auth::CookieFile(cookie.into());
+        Auth::CookieFile(cookie.into())
     } else if let Ok(user) = std::env::var("RPC_USER") {
-        return Auth::UserPass(user, std::env::var("RPC_PASS").unwrap_or_default());
+        Auth::UserPass(user, std::env::var("RPC_PASS").unwrap_or_default())
     } else {
-        panic!("Either RPC_COOKIE or RPC_USER + RPC_PASS must be set.");
-    };
+        panic!("Either RPC_COOKIE or RPC_USER + RPC_PASS must be set.")
+    }
 }
 
 #[tokio::main]
@@ -308,7 +305,7 @@ async fn test_get_address_info(cl: &Client) {
 async fn test_set_label(cl: &Client) {
     let addr = cl.get_new_address(Some("label"), None).await.unwrap();
     let info = cl.get_address_info(&addr).await.unwrap();
-    if version() >= 0_20_00_00 {
+    if version() >= 20_00_00 {
         assert!(info.label.is_none());
         assert_eq!(info.labels[0], json::GetAddressInfoResultLabel::Simple("label".into()));
     } else {
@@ -324,7 +321,7 @@ async fn test_set_label(cl: &Client) {
 
     cl.set_label(&addr, "other").await.unwrap();
     let info = cl.get_address_info(&addr).await.unwrap();
-    if version() >= 0_20_00_00 {
+    if version() >= 20_00_00 {
         assert!(info.label.is_none());
         assert_eq!(info.labels[0], json::GetAddressInfoResultLabel::Simple("other".into()));
     } else {
@@ -493,7 +490,7 @@ async fn test_sign_raw_transaction_with_send_raw_transaction(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let tx = Transaction {
         version: 1,
@@ -529,7 +526,7 @@ async fn test_sign_raw_transaction_with_send_raw_transaction(cl: &Client) {
         lock_time: 0,
         input: vec![TxIn {
             previous_output: OutPoint {
-                txid: txid,
+                txid,
                 vout: 0,
             },
             script_sig: Script::new(),
@@ -565,7 +562,7 @@ async fn test_create_raw_transaction(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
@@ -626,7 +623,7 @@ async fn test_test_mempool_accept(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
@@ -654,7 +651,7 @@ async fn test_wallet_create_funded_psbt(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
@@ -710,7 +707,7 @@ async fn test_combine_psbt(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
         vout: unspent.vout,
@@ -732,7 +729,7 @@ async fn test_finalize_psbt(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
         vout: unspent.vout,
@@ -816,7 +813,7 @@ async fn test_estimate_smart_fee(cl: &Client) {
 
     // With a fresh node, we can't get fee estimates.
     if let Some(errors) = res.errors {
-        if errors == &["Insufficient data or no feerate found"] {
+        if errors == ["Insufficient data or no feerate found"] {
             println!("Cannot test estimate_smart_fee because no feerate found!");
             return;
         } else {
@@ -829,7 +826,7 @@ async fn test_estimate_smart_fee(cl: &Client) {
 }
 
 async fn test_ping(cl: &Client) {
-    let _ = cl.ping().await.unwrap();
+    cl.ping().await.unwrap();
 }
 
 async fn test_get_peer_info(cl: &Client) {
