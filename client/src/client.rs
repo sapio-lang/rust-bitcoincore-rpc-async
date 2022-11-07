@@ -21,7 +21,7 @@ use serde::*;
 use serde_json;
 
 use bitcoin::hashes::hex::{FromHex, ToHex};
-use bitcoin::secp256k1::Signature;
+use bitcoin::secp256k1::ecdsa::Signature;
 use bitcoin::{
     Address, Amount, Block, BlockHeader, OutPoint, PrivateKey, PublicKey, Script, Transaction,
 };
