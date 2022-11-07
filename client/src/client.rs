@@ -50,11 +50,11 @@ impl From<OutPoint> for JsonOutPoint {
     }
 }
 
-impl Into<OutPoint> for JsonOutPoint {
-    fn into(self) -> OutPoint {
+impl From<JsonOutPoint> for OutPoint {
+    fn from(jop: JsonOutPoint) -> OutPoint {
         OutPoint {
-            txid: self.txid,
-            vout: self.vout,
+            txid: jop.txid,
+            vout: jop.vout,
         }
     }
 }
@@ -858,6 +858,7 @@ pub trait RpcApi: Sized {
         self.call("getmempoolentry", &[into_json(txid)?]).await
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn send_to_address(
         &self,
         address: &Address,
