@@ -20,6 +20,7 @@ use std::collections::HashMap;
 
 use bitcoincore_rpc_async as bitcoincore_rpc;
 use bitcoincore_rpc::json;
+use bitcoincore_rpc::json::bitcoin;
 use bitcoincore_rpc::jsonrpc::error::Error as JsonRpcError;
 use bitcoincore_rpc::{Auth, Client, Error, RpcApi};
 

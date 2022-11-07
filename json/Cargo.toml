@@ -24,4 +24,10 @@ serde = { version = "1", features = [ "derive" ] }
 serde_json = "1"
 hex = "0.3"
 
-bitcoin = { package = "sapio-bitcoin", version = "0.28.0-rc.3", features = [ "use-serde" ] }
+sapio-bitcoin = { package = "sapio-bitcoin", version = "0.28.1", features = [ "use-serde" ], optional=true }
+main-bitcoin = { package = "bitcoin", version = "0.28.2", features = [ "use-serde" ], optional=true }
+
+[features]
+default = ["main"]
+sapio = ["sapio-bitcoin"]
+main = ["main-bitcoin"]

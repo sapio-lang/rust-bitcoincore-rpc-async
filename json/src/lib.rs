@@ -15,7 +15,18 @@
 
 
 use std::collections::HashMap;
-pub use bitcoin;
+
+#[cfg(all(feature = "main", feature = "sapio"))]
+compile_error!("features `crate/main` and `crate/sapio` are mutually exclusive");
+
+#[cfg(not(any(feature = "main", feature = "sapio")))]
+compile_error!("one of `crate/main` or `crate/sapio` must be set");
+
+#[cfg(feature = "sapio")]
+pub use sapio_bitcoin as bitcoin;
+
+#[cfg(feature = "main")]
+pub use main_bitcoin as bitcoin;
 
 use bitcoin::consensus::encode;
 use bitcoin::hashes::hex::{FromHex, ToHex};
