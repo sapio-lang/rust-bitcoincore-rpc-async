@@ -28,7 +28,7 @@ use bitcoin::hashes::hex::{FromHex, ToHex};
 use bitcoin::hashes::Hash;
 use bitcoin::secp256k1;
 use bitcoin::{
-    Address, Amount, Network, OutPoint, PrivateKey, Script, SigHashType, SignedAmount, Transaction,
+    Address, Amount, Network, OutPoint, PrivateKey, Script, EcdsaSighashType, SignedAmount, Transaction,
     TxIn, TxOut, Txid, Witness
 };
 use bitcoincore_rpc::json::ScanTxOutRequest;
@@ -543,7 +543,7 @@ async fn test_sign_raw_transaction_with_send_raw_transaction(cl: &Client) {
     };
 
     let res =
-        cl.sign_raw_transaction_with_key(&tx, &[sk], None, Some(SigHashType::All.into())).await.unwrap();
+        cl.sign_raw_transaction_with_key(&tx, &[sk], None, Some(EcdsaSighashType::All.into())).await.unwrap();
     assert!(res.complete);
     let _ = cl.send_raw_transaction(&res.transaction().unwrap()).await.unwrap();
 }

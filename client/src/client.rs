@@ -738,7 +738,7 @@ pub trait RpcApi: Sized {
         tx: R,
         utxos: Option<&[json::SignRawTransactionInput]>,
         private_keys: Option<&[PrivateKey]>,
-        sighash_type: Option<json::SigHashType>,
+        sighash_type: Option<json::EcdsaSighashType>,
     ) -> Result<json::SignRawTransactionResult> 
     where R: Sync + Send
     {
@@ -756,7 +756,7 @@ pub trait RpcApi: Sized {
         &self,
         tx: R,
         utxos: Option<&[json::SignRawTransactionInput]>,
-        sighash_type: Option<json::SigHashType>,
+        sighash_type: Option<json::EcdsaSighashType>,
     ) -> Result<json::SignRawTransactionResult> 
     where R: Sync + Send
     {
@@ -770,7 +770,7 @@ pub trait RpcApi: Sized {
         tx: R,
         privkeys: &[PrivateKey],
         prevtxs: Option<&[json::SignRawTransactionInput]>,
-        sighash_type: Option<json::SigHashType>,
+        sighash_type: Option<json::EcdsaSighashType>,
     ) -> Result<json::SignRawTransactionResult> 
     where R: Sync + Send
     {
