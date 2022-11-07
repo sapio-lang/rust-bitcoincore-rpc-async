@@ -20,10 +20,15 @@ name = "bitcoincore_rpc_async"
 path = "src/lib.rs"
 
 [dependencies]
-bitcoincore-rpc-json-async = { version = "4.0.0-alpha.0", path = "../json"}
 async-trait = "0.1.42"
 log = "0.4.5"
 jsonrpc-async = {version="2.0.2"}
+
+
+[dependencies.bitcoincore-rpc-json-async]
+version = "4.0.0-alpha.0"
+path = "../json"
+default-features = false
 
 # Used for deserialization of JSON.
 serde = "1"
@@ -31,3 +36,10 @@ serde_json = "1.0.61"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
+
+
+[features]
+default = ["main"]
+main = ["bitcoincore-rpc-json-async/main"]
+sapio = ["bitcoincore-rpc-json-async/sapio"]
+
