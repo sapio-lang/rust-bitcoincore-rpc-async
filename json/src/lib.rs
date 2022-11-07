@@ -13,9 +13,8 @@
 //! This is a client library for the Bitcoin Core JSON-RPC API.
 //!
 
-
-use std::collections::HashMap;
 pub use bitcoin;
+use std::collections::HashMap;
 
 use bitcoin::consensus::encode;
 use bitcoin::hashes::hex::{FromHex, ToHex};
@@ -802,7 +801,7 @@ impl<'a> serde::Serialize for ImportMultiRequestScriptPubkey<'a> {
                 #[derive(Serialize)]
                 struct Tmp<'a> {
                     pub address: &'a Address,
-                };
+                }
                 serde::Serialize::serialize(
                     &Tmp {
                         address: addr,

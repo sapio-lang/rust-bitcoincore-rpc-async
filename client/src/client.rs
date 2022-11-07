@@ -13,7 +13,6 @@ use std::fs::File;
 use std::iter::FromIterator;
 use std::path::PathBuf;
 use std::{fmt, result};
-use serde_json::value::RawValue;
 
 use bitcoincore_rpc_json_async::bitcoin;
 use bitcoincore_rpc_json_async as json;
