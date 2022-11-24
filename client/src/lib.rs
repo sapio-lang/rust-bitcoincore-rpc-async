@@ -13,15 +13,9 @@
 //! This is a client library for the Bitcoin Core JSON-RPC API.
 //!
 
-
-use  log;
-
-use  serde;
-use  serde_json;
-
-pub use  bitcoincore_rpc_json_async as json;
-pub use  jsonrpc_async as jsonrpc;
+pub use bitcoincore_rpc_json_async as json;
 pub use json::bitcoin;
+pub use jsonrpc_async as jsonrpc;
 
 mod client;
 mod error;

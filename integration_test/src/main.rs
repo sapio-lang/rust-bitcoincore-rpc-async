@@ -10,26 +10,23 @@
 
 #![deny(unused)]
 
-use bitcoin;
 #[macro_use]
 extern crate lazy_static;
-use log;
-use tokio;
 
 use std::collections::HashMap;
 
-use bitcoincore_rpc_async as bitcoincore_rpc;
 use bitcoincore_rpc::json;
 use bitcoincore_rpc::jsonrpc::error::Error as JsonRpcError;
 use bitcoincore_rpc::{Auth, Client, Error, RpcApi};
+use bitcoincore_rpc_async as bitcoincore_rpc;
 
 use bitcoin::consensus::encode::{deserialize, serialize};
 use bitcoin::hashes::hex::{FromHex, ToHex};
 use bitcoin::hashes::Hash;
 use bitcoin::secp256k1;
 use bitcoin::{
-    Address, Amount, Network, OutPoint, PrivateKey, Script, SigHashType, SignedAmount, Transaction,
-    TxIn, TxOut, Txid, Witness
+    Address, Amount, EcdsaSighashType, Network, OutPoint, PrivateKey, Script, SignedAmount,
+    Transaction, TxIn, TxOut, Txid, Witness,
 };
 use bitcoincore_rpc::json::ScanTxOutRequest;
 
@@ -96,17 +93,17 @@ fn sbtc<F: Into<f64>>(btc: F) -> SignedAmount {
 }
 
 fn get_rpc_url() -> String {
-    return std::env::var("RPC_URL").expect("RPC_URL must be set");
+    std::env::var("RPC_URL").expect("RPC_URL must be set")
 }
 
 fn get_auth() -> bitcoincore_rpc::Auth {
     if let Ok(cookie) = std::env::var("RPC_COOKIE") {
-        return Auth::CookieFile(cookie.into());
+        Auth::CookieFile(cookie.into())
     } else if let Ok(user) = std::env::var("RPC_USER") {
-        return Auth::UserPass(user, std::env::var("RPC_PASS").unwrap_or_default());
+        Auth::UserPass(user, std::env::var("RPC_PASS").unwrap_or_default())
     } else {
-        panic!("Either RPC_COOKIE or RPC_USER + RPC_PASS must be set.");
-    };
+        panic!("Either RPC_COOKIE or RPC_USER + RPC_PASS must be set.")
+    }
 }
 
 #[tokio::main]
@@ -236,7 +233,8 @@ async fn test_generate(cl: &Client) {
 async fn test_get_balance_generate_to_address(cl: &Client) {
     let initial = cl.get_balance(None, None).await.unwrap();
 
-    let blocks = cl.generate_to_address(500, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
+    let blocks =
+        cl.generate_to_address(500, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
     assert_eq!(blocks.len(), 500);
     assert_ne!(cl.get_balance(None, None).await.unwrap(), initial);
 }
@@ -245,7 +243,10 @@ async fn test_get_balances_generate_to_address(cl: &Client) {
     if version() >= 190000 {
         let initial = cl.get_balances().await.unwrap();
 
-        let blocks = cl.generate_to_address(500, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
+        let blocks = cl
+            .generate_to_address(500, &cl.get_new_address(None, None).await.unwrap())
+            .await
+            .unwrap();
         assert_eq!(blocks.len(), 500);
         assert_ne!(cl.get_balances().await.unwrap(), initial);
     }
@@ -308,7 +309,7 @@ async fn test_get_address_info(cl: &Client) {
 async fn test_set_label(cl: &Client) {
     let addr = cl.get_new_address(Some("label"), None).await.unwrap();
     let info = cl.get_address_info(&addr).await.unwrap();
-    if version() >= 0_20_00_00 {
+    if version() >= 20_00_00 {
         assert!(info.label.is_none());
         assert_eq!(info.labels[0], json::GetAddressInfoResultLabel::Simple("label".into()));
     } else {
@@ -324,7 +325,7 @@ async fn test_set_label(cl: &Client) {
 
     cl.set_label(&addr, "other").await.unwrap();
     let info = cl.get_address_info(&addr).await.unwrap();
-    if version() >= 0_20_00_00 {
+    if version() >= 20_00_00 {
         assert!(info.label.is_none());
         assert_eq!(info.labels[0], json::GetAddressInfoResultLabel::Simple("other".into()));
     } else {
@@ -342,12 +343,30 @@ async fn test_set_label(cl: &Client) {
 async fn test_send_to_address(cl: &Client) {
     let addr = cl.get_new_address(None, None).await.unwrap();
     let est = json::EstimateMode::Conservative;
-    let _ = cl.send_to_address(&addr, btc(1.0f64), Some("cc"), None, None, None, None, None).await.unwrap();
-    let _ = cl.send_to_address(&addr, btc(1.0f64), None, Some("tt"), None, None, None, None).await.unwrap();
-    let _ = cl.send_to_address(&addr, btc(1.0f64), None, None, Some(true), None, None, None).await.unwrap();
-    let _ = cl.send_to_address(&addr, btc(1.0f64), None, None, None, Some(true), None, None).await.unwrap();
-    let _ = cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, Some(3), None).await.unwrap();
-    let _ = cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, Some(est)).await.unwrap();
+    let _ = cl
+        .send_to_address(&addr, btc(1.0f64), Some("cc"), None, None, None, None, None)
+        .await
+        .unwrap();
+    let _ = cl
+        .send_to_address(&addr, btc(1.0f64), None, Some("tt"), None, None, None, None)
+        .await
+        .unwrap();
+    let _ = cl
+        .send_to_address(&addr, btc(1.0f64), None, None, Some(true), None, None, None)
+        .await
+        .unwrap();
+    let _ = cl
+        .send_to_address(&addr, btc(1.0f64), None, None, None, Some(true), None, None)
+        .await
+        .unwrap();
+    let _ = cl
+        .send_to_address(&addr, btc(1.0f64), None, None, None, None, Some(3), None)
+        .await
+        .unwrap();
+    let _ = cl
+        .send_to_address(&addr, btc(1.0f64), None, None, None, None, None, Some(est))
+        .await
+        .unwrap();
 }
 
 async fn test_get_received_by_address(cl: &Client) {
@@ -355,7 +374,8 @@ async fn test_get_received_by_address(cl: &Client) {
     let _ = cl.send_to_address(&addr, btc(1), None, None, None, None, None, None).await.unwrap();
     assert_eq!(cl.get_received_by_address(&addr, Some(0)).await.unwrap(), btc(1));
     assert_eq!(cl.get_received_by_address(&addr, Some(1)).await.unwrap(), btc(0));
-    let _ = cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
+    let _ =
+        cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
     assert_eq!(cl.get_received_by_address(&addr, Some(6)).await.unwrap(), btc(1));
     assert_eq!(cl.get_received_by_address(&addr, None).await.unwrap(), btc(1));
 }
@@ -374,7 +394,8 @@ async fn test_list_unspent(cl: &Client) {
         maximum_amount: Some(btc(7)),
         ..Default::default()
     };
-    let unspent = cl.list_unspent(Some(0), None, Some(&[&addr]), None, Some(options)).await.unwrap();
+    let unspent =
+        cl.list_unspent(Some(0), None, Some(&[&addr]), None, Some(options)).await.unwrap();
     assert_eq!(unspent.len(), 1);
     assert_eq!(unspent[0].txid, txid);
     assert_eq!(unspent[0].address.as_ref(), Some(&addr));
@@ -391,7 +412,8 @@ async fn test_get_connection_count(cl: &Client) {
 
 async fn test_get_raw_transaction(cl: &Client) {
     let addr = cl.get_new_address(None, None).await.unwrap();
-    let txid = cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
+    let txid =
+        cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
     let tx = cl.get_raw_transaction(&txid, None).await.unwrap();
     let hex = cl.get_raw_transaction_hex(&txid, None).await.unwrap();
     assert_eq!(tx, deserialize(&Vec::<u8>::from_hex(&hex).unwrap()).unwrap());
@@ -400,7 +422,8 @@ async fn test_get_raw_transaction(cl: &Client) {
     let info = cl.get_raw_transaction_info(&txid, None).await.unwrap();
     assert_eq!(info.txid, txid);
 
-    let blocks = cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
+    let blocks =
+        cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
     let _ = cl.get_raw_transaction_info(&txid, Some(&blocks[0])).await.unwrap();
 }
 
@@ -409,8 +432,10 @@ async fn test_get_raw_mempool(cl: &Client) {
 }
 
 async fn test_get_transaction(cl: &Client) {
-    let txid =
-        cl.send_to_address(&RANDOM_ADDRESS, btc(1), None, None, None, None, None, None).await.unwrap();
+    let txid = cl
+        .send_to_address(&RANDOM_ADDRESS, btc(1), None, None, None, None, None, None)
+        .await
+        .unwrap();
     let tx = cl.get_transaction(&txid, None).await.unwrap();
     assert_eq!(tx.amount, sbtc(-1.0));
     assert_eq!(tx.info.txid, txid);
@@ -434,8 +459,10 @@ async fn test_list_since_block(cl: &Client) {
 }
 
 async fn test_get_tx_out(cl: &Client) {
-    let txid =
-        cl.send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
+    let txid = cl
+        .send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None)
+        .await
+        .unwrap();
     let out = cl.get_tx_out(&txid, 0, Some(false)).await.unwrap();
     assert!(out.is_none());
     let out = cl.get_tx_out(&txid, 0, Some(true)).await.unwrap();
@@ -444,18 +471,25 @@ async fn test_get_tx_out(cl: &Client) {
 }
 
 async fn test_get_tx_out_proof(cl: &Client) {
-    let txid1 =
-        cl.send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
-    let txid2 =
-        cl.send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
-    let blocks = cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
+    let txid1 = cl
+        .send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None)
+        .await
+        .unwrap();
+    let txid2 = cl
+        .send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None)
+        .await
+        .unwrap();
+    let blocks =
+        cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
     let proof = cl.get_tx_out_proof(&[txid1, txid2], Some(&blocks[0])).await.unwrap();
     assert!(!proof.is_empty());
 }
 
 async fn test_get_mempool_entry(cl: &Client) {
-    let txid =
-        cl.send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
+    let txid = cl
+        .send_to_address(&RANDOM_ADDRESS, btc(1.0f64), None, None, None, None, None, None)
+        .await
+        .unwrap();
     let entry = cl.get_mempool_entry(&txid).await.unwrap();
     assert!(entry.spent_by.is_empty());
 
@@ -465,14 +499,16 @@ async fn test_get_mempool_entry(cl: &Client) {
 
 async fn test_lock_unspent_unlock_unspent(cl: &Client) {
     let addr = cl.get_new_address(None, None).await.unwrap();
-    let txid = cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
+    let txid =
+        cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
 
     assert!(cl.lock_unspent(&[OutPoint::new(txid, 0)]).await.unwrap());
     assert!(cl.unlock_unspent(&[OutPoint::new(txid, 0)]).await.unwrap());
 }
 
 async fn test_get_block_filter(cl: &Client) {
-    let blocks = cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
+    let blocks =
+        cl.generate_to_address(7, &cl.get_new_address(None, None).await.unwrap()).await.unwrap();
     if version() >= 190000 {
         let _ = cl.get_block_filter(&blocks[0]).await.unwrap();
     } else {
@@ -493,7 +529,7 @@ async fn test_sign_raw_transaction_with_send_raw_transaction(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let tx = Transaction {
         version: 1,
@@ -529,7 +565,7 @@ async fn test_sign_raw_transaction_with_send_raw_transaction(cl: &Client) {
         lock_time: 0,
         input: vec![TxIn {
             previous_output: OutPoint {
-                txid: txid,
+                txid,
                 vout: 0,
             },
             script_sig: Script::new(),
@@ -542,8 +578,10 @@ async fn test_sign_raw_transaction_with_send_raw_transaction(cl: &Client) {
         }],
     };
 
-    let res =
-        cl.sign_raw_transaction_with_key(&tx, &[sk], None, Some(SigHashType::All.into())).await.unwrap();
+    let res = cl
+        .sign_raw_transaction_with_key(&tx, &[sk], None, Some(EcdsaSighashType::All.into()))
+        .await
+        .unwrap();
     assert!(res.complete);
     let _ = cl.send_raw_transaction(&res.transaction().unwrap()).await.unwrap();
 }
@@ -565,7 +603,7 @@ async fn test_create_raw_transaction(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
@@ -575,9 +613,12 @@ async fn test_create_raw_transaction(cl: &Client) {
     let mut output = HashMap::new();
     output.insert(RANDOM_ADDRESS.to_string(), btc(1.0f64));
 
-    let tx =
-        cl.create_raw_transaction(&[input.clone()], &output, Some(500_000), Some(true)).await.unwrap();
-    let hex = cl.create_raw_transaction_hex(&[input], &output, Some(500_000), Some(true)).await.unwrap();
+    let tx = cl
+        .create_raw_transaction(&[input.clone()], &output, Some(500_000), Some(true))
+        .await
+        .unwrap();
+    let hex =
+        cl.create_raw_transaction_hex(&[input], &output, Some(500_000), Some(true)).await.unwrap();
     assert_eq!(tx, deserialize(&Vec::<u8>::from_hex(&hex).unwrap()).unwrap());
     assert_eq!(hex, serialize(&tx).to_hex());
 }
@@ -626,7 +667,7 @@ async fn test_test_mempool_accept(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
@@ -636,8 +677,10 @@ async fn test_test_mempool_accept(cl: &Client) {
     let mut output = HashMap::new();
     output.insert(RANDOM_ADDRESS.to_string(), unspent.amount - *FEE);
 
-    let tx =
-        cl.create_raw_transaction(&[input.clone()], &output, Some(500_000), Some(false)).await.unwrap();
+    let tx = cl
+        .create_raw_transaction(&[input.clone()], &output, Some(500_000), Some(false))
+        .await
+        .unwrap();
     let res = cl.test_mempool_accept(&[&tx]).await.unwrap();
     assert!(!res[0].allowed);
     assert!(res[0].reject_reason.is_some());
@@ -654,7 +697,7 @@ async fn test_wallet_create_funded_psbt(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
 
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
@@ -684,7 +727,8 @@ async fn test_wallet_create_funded_psbt(cl: &Client) {
             Some(options),
             Some(true),
         )
-        .await.unwrap();
+        .await
+        .unwrap();
 
     let options = json::WalletCreateFundedPsbtOptions {
         change_address: Some(addr),
@@ -700,7 +744,8 @@ async fn test_wallet_create_funded_psbt(cl: &Client) {
     };
     let psbt = cl
         .wallet_create_funded_psbt(&[input], &output, Some(500_000), Some(options), Some(true))
-        .await.unwrap();
+        .await
+        .unwrap();
     assert!(!psbt.psbt.is_empty());
 }
 
@@ -710,7 +755,7 @@ async fn test_combine_psbt(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
         vout: unspent.vout,
@@ -720,7 +765,8 @@ async fn test_combine_psbt(cl: &Client) {
     output.insert(RANDOM_ADDRESS.to_string(), btc(1.0f64));
     let psbt1 = cl
         .wallet_create_funded_psbt(&[input.clone()], &output, Some(500_000), None, Some(true))
-        .await.unwrap();
+        .await
+        .unwrap();
 
     let psbt = cl.combine_psbt(&[psbt1.psbt.clone(), psbt1.psbt]).await.unwrap();
     assert!(!psbt.is_empty());
@@ -732,7 +778,7 @@ async fn test_finalize_psbt(cl: &Client) {
         ..Default::default()
     };
     let unspent = cl.list_unspent(Some(6), None, None, None, Some(options)).await.unwrap();
-    let unspent = unspent.into_iter().nth(0).unwrap();
+    let unspent = unspent.into_iter().next().unwrap();
     let input = json::CreateRawTransactionInput {
         txid: unspent.txid,
         vout: unspent.vout,
@@ -742,7 +788,8 @@ async fn test_finalize_psbt(cl: &Client) {
     output.insert(RANDOM_ADDRESS.to_string(), btc(1.0f64));
     let psbt = cl
         .wallet_create_funded_psbt(&[input.clone()], &output, Some(500_000), None, Some(true))
-        .await.unwrap();
+        .await
+        .unwrap();
 
     let res = cl.finalize_psbt(&psbt.psbt, Some(true)).await.unwrap();
     assert!(!res.complete);
@@ -752,7 +799,8 @@ async fn test_finalize_psbt(cl: &Client) {
 
 async fn test_list_received_by_address(cl: &Client) {
     let addr = cl.get_new_address(None, None).await.unwrap();
-    let txid = cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
+    let txid =
+        cl.send_to_address(&addr, btc(1.0f64), None, None, None, None, None, None).await.unwrap();
 
     let _ = cl.list_received_by_address(Some(&addr), None, None, None).await.unwrap();
     let _ = cl.list_received_by_address(Some(&addr), None, Some(true), None).await.unwrap();
@@ -816,7 +864,7 @@ async fn test_estimate_smart_fee(cl: &Client) {
 
     // With a fresh node, we can't get fee estimates.
     if let Some(errors) = res.errors {
-        if errors == &["Insufficient data or no feerate found"] {
+        if errors == ["Insufficient data or no feerate found"] {
             println!("Cannot test estimate_smart_fee because no feerate found!");
             return;
         } else {
@@ -829,7 +877,7 @@ async fn test_estimate_smart_fee(cl: &Client) {
 }
 
 async fn test_ping(cl: &Client) {
-    let _ = cl.ping().await.unwrap();
+    cl.ping().await.unwrap();
 }
 
 async fn test_get_peer_info(cl: &Client) {
@@ -908,7 +956,8 @@ async fn test_create_wallet(cl: &Client) {
                 wallet_param.passphrase,
                 wallet_param.avoid_reuse,
             )
-            .await.unwrap();
+            .await
+            .unwrap();
 
         assert_eq!(result.name, wallet_param.name);
         let expected_warning = match (wallet_param.passphrase, wallet_param.avoid_reuse) {
@@ -972,7 +1021,8 @@ async fn test_scantxoutset(cl: &Client) {
 
     let utxos = cl
         .scan_tx_out_set_blocking(&[ScanTxOutRequest::Single(format!("addr({})", addr))])
-        .await.unwrap();
+        .await
+        .unwrap();
 
     assert_eq!(utxos.unspents.len(), 2);
     assert_eq!(utxos.success, Some(true));

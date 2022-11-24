@@ -9,7 +9,6 @@
 //
 
 use super::bitcoin;
-use serde_json;
 use super::json;
 
 use crate::client::Result;

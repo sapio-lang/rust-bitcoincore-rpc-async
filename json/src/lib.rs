@@ -13,9 +13,8 @@
 //! This is a client library for the Bitcoin Core JSON-RPC API.
 //!
 
-
-use std::collections::HashMap;
 pub use bitcoin;
+use std::collections::HashMap;
 
 use bitcoin::consensus::encode;
 use bitcoin::hashes::hex::{FromHex, ToHex};
@@ -41,7 +40,7 @@ pub mod serde_hex {
 
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
         let hex_str: String = ::serde::Deserialize::deserialize(d)?;
-        Ok(FromHex::from_hex(&hex_str).map_err(D::Error::custom)?)
+        FromHex::from_hex(&hex_str).map_err(D::Error::custom)
     }
 
     pub mod opt {
@@ -348,7 +347,7 @@ impl GetRawTransactionResult {
     }
 
     pub fn transaction(&self) -> Result<Transaction, encode::Error> {
-        Ok(encode::deserialize(&self.hex)?)
+        encode::deserialize(&self.hex)
     }
 }
 
@@ -414,7 +413,7 @@ pub struct GetTransactionResult {
 
 impl GetTransactionResult {
     pub fn transaction(&self) -> Result<Transaction, encode::Error> {
-        Ok(encode::deserialize(&self.hex)?)
+        encode::deserialize(&self.hex)
     }
 }
 
@@ -527,7 +526,7 @@ pub struct SignRawTransactionResult {
 
 impl SignRawTransactionResult {
     pub fn transaction(&self) -> Result<Transaction, encode::Error> {
-        Ok(encode::deserialize(&self.hex)?)
+        encode::deserialize(&self.hex)
     }
 }
 
@@ -798,11 +797,11 @@ impl<'a> serde::Serialize for ImportMultiRequestScriptPubkey<'a> {
         S: serde::Serializer,
     {
         match *self {
-            ImportMultiRequestScriptPubkey::Address(ref addr) => {
+            ImportMultiRequestScriptPubkey::Address(addr) => {
                 #[derive(Serialize)]
                 struct Tmp<'a> {
                     pub address: &'a Address,
-                };
+                }
                 serde::Serialize::serialize(
                     &Tmp {
                         address: addr,
@@ -1066,28 +1065,28 @@ pub enum EstimateMode {
     Conservative,
 }
 
-/// A wrapper around bitcoin::SigHashType that will be serialized
+/// A wrapper around bitcoin::EcdsaSighashType that will be serialized
 /// according to what the RPC expects.
-pub struct SigHashType(bitcoin::SigHashType);
+pub struct EcdsaSighashType(bitcoin::EcdsaSighashType);
 
-impl From<bitcoin::SigHashType> for SigHashType {
-    fn from(sht: bitcoin::SigHashType) -> SigHashType {
-        SigHashType(sht)
+impl From<bitcoin::EcdsaSighashType> for EcdsaSighashType {
+    fn from(sht: bitcoin::EcdsaSighashType) -> EcdsaSighashType {
+        EcdsaSighashType(sht)
     }
 }
 
-impl serde::Serialize for SigHashType {
+impl serde::Serialize for EcdsaSighashType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
         serializer.serialize_str(match self.0 {
-            bitcoin::SigHashType::All => "ALL",
-            bitcoin::SigHashType::None => "NONE",
-            bitcoin::SigHashType::Single => "SINGLE",
-            bitcoin::SigHashType::AllPlusAnyoneCanPay => "ALL|ANYONECANPAY",
-            bitcoin::SigHashType::NonePlusAnyoneCanPay => "NONE|ANYONECANPAY",
-            bitcoin::SigHashType::SinglePlusAnyoneCanPay => "SINGLE|ANYONECANPAY",
+            bitcoin::EcdsaSighashType::All => "ALL",
+            bitcoin::EcdsaSighashType::None => "NONE",
+            bitcoin::EcdsaSighashType::Single => "SINGLE",
+            bitcoin::EcdsaSighashType::AllPlusAnyoneCanPay => "ALL|ANYONECANPAY",
+            bitcoin::EcdsaSighashType::NonePlusAnyoneCanPay => "NONE|ANYONECANPAY",
+            bitcoin::EcdsaSighashType::SinglePlusAnyoneCanPay => "SINGLE|ANYONECANPAY",
         })
     }
 }
@@ -1165,7 +1164,7 @@ impl FundRawTransactionResult {
 }
 
 // Used for signrawtransaction argument.
-#[derive(Serialize, Clone, PartialEq, Debug)]
+#[derive(Serialize, Clone, PartialEq, Eq, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SignRawTransactionInput {
     pub txid: bitcoin::Txid,
