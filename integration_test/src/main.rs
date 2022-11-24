@@ -110,7 +110,8 @@ fn get_auth() -> bitcoincore_rpc::Auth {
 async fn main() {
     log::set_logger(&LOGGER).map(|()| log::set_max_level(log::LevelFilter::max())).unwrap();
 
-    let rpc_url = get_rpc_url();
+    // let rpc_url = get_rpc_url();
+    let rpc_url = format!("{}/wallet/testwallet", get_rpc_url());
     let auth = get_auth();
 
     let cl = Client::new(rpc_url, auth).await.unwrap();
@@ -118,6 +119,8 @@ async fn main() {
     test_get_network_info(&cl).await;
     unsafe { VERSION = cl.version().await.unwrap() };
     println!("Version: {}", version());
+
+    cl.create_wallet("testwallet", None, None, None, None).await.unwrap();
 
     test_get_mining_info(&cl).await;
     test_get_blockchain_info(&cl).await;
@@ -225,6 +228,8 @@ async fn test_generate(cl: &Client) {
         assert_eq!(blocks.len(), 6);
     } else if version() < 190000 {
         assert_deprecated!(cl.generate(5, None));
+    } else if version() < 210000 {
+        assert_not_found!(cl.generate(5, None));
     } else {
         assert_not_found!(cl.generate(5, None));
     }
