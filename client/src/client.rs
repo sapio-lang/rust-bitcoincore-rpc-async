@@ -14,19 +14,19 @@ use std::iter::FromIterator;
 use std::path::PathBuf;
 use std::{fmt, result};
 
-use bitcoincore_rpc_json_async::bitcoin;
 use bitcoincore_rpc_json_async as json;
+use bitcoincore_rpc_json_async::bitcoin;
 use jsonrpc_async as jsonrpc;
 use serde::*;
 
+use async_trait::async_trait;
 use bitcoin::hashes::hex::{FromHex, ToHex};
 use bitcoin::secp256k1::ecdsa::Signature;
 use bitcoin::{
     Address, Amount, Block, BlockHeader, OutPoint, PrivateKey, PublicKey, Script, Transaction,
 };
 use log::Level::{Debug, Trace, Warn};
-use log::{log_enabled, debug, trace};
-use async_trait::async_trait;
+use log::{debug, log_enabled, trace};
 
 use crate::error::*;
 use crate::queryable;
@@ -201,7 +201,7 @@ impl Auth {
         use std::io::Read;
         match self {
             Auth::None => Ok(None),
-            Auth::UserPass(u, p) => Ok(Some((u,p))),
+            Auth::UserPass(u, p) => Ok(Some((u, p))),
             Auth::CookieFile(path) => {
                 let mut file = File::open(path)?;
                 let mut contents = String::new();
@@ -228,9 +228,10 @@ pub trait RpcApi: Sized {
     async fn get_by_id<T: queryable::Queryable<Self>>(
         &self,
         id: &<T as queryable::Queryable<Self>>::Id,
-    ) -> Result<T> 
-    where T: Sync + Send ,
-        <T as queryable::Queryable<Self>>::Id : Sync + Send
+    ) -> Result<T>
+    where
+        T: Sync + Send,
+        <T as queryable::Queryable<Self>>::Id: Sync + Send,
     {
         T::query(self, id).await
     }
@@ -291,7 +292,8 @@ pub trait RpcApi: Sized {
         self.call(
             "createwallet",
             handle_defaults(&mut args, &[false.into(), false.into(), into_json("")?, false.into()]),
-        ).await
+        )
+        .await
     }
 
     async fn list_wallets(&self) -> Result<Vec<String>> {
@@ -449,7 +451,8 @@ pub trait RpcApi: Sized {
         block_hash: Option<&bitcoin::BlockHash>,
     ) -> Result<Transaction> {
         let mut args = [into_json(txid)?, into_json(false)?, opt_into_json(block_hash)?];
-        let hex: String = self.call("getrawtransaction", handle_defaults(&mut args, &[null()])).await?;
+        let hex: String =
+            self.call("getrawtransaction", handle_defaults(&mut args, &[null()])).await?;
         let bytes: Vec<u8> = FromHex::from_hex(&hex)?;
         Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
     }
@@ -494,7 +497,11 @@ pub trait RpcApi: Sized {
         Ok(self.call("getbalances", &[]).await?)
     }
 
-    async fn get_received_by_address(&self, address: &Address, minconf: Option<u32>) -> Result<Amount> {
+    async fn get_received_by_address(
+        &self,
+        address: &Address,
+        minconf: Option<u32>,
+    ) -> Result<Amount> {
         let mut args = [address.to_string().into(), opt_into_json(minconf)?];
         Ok(Amount::from_btc(
             self.call("getreceivedbyaddress", handle_defaults(&mut args, &[null()])).await?,
@@ -523,7 +530,8 @@ pub trait RpcApi: Sized {
             opt_into_json(skip)?,
             opt_into_json(include_watchonly)?,
         ];
-        self.call("listtransactions", handle_defaults(&mut args, &[10.into(), 0.into(), null()])).await
+        self.call("listtransactions", handle_defaults(&mut args, &[10.into(), 0.into(), null()]))
+            .await
     }
 
     async fn list_since_block(
@@ -608,7 +616,8 @@ pub trait RpcApi: Sized {
         self.call(
             "importaddress",
             handle_defaults(&mut args, &[into_json("")?, true.into(), null()]),
-        ).await
+        )
+        .await
     }
 
     async fn import_multi(
@@ -654,18 +663,14 @@ pub trait RpcApi: Sized {
 
     /// To unlock, use [unlock_unspent].
     async fn lock_unspent(&self, outputs: &[OutPoint]) -> Result<bool> {
-        let outputs: Vec<_> = outputs
-            .iter()
-            .map(|o| serde_json::to_value(JsonOutPoint::from(*o)).unwrap())
-            .collect();
+        let outputs: Vec<_> =
+            outputs.iter().map(|o| serde_json::to_value(JsonOutPoint::from(*o)).unwrap()).collect();
         self.call("lockunspent", &[false.into(), outputs.into()]).await
     }
 
     async fn unlock_unspent(&self, outputs: &[OutPoint]) -> Result<bool> {
-        let outputs: Vec<_> = outputs
-            .iter()
-            .map(|o| serde_json::to_value(JsonOutPoint::from(*o)).unwrap())
-            .collect();
+        let outputs: Vec<_> =
+            outputs.iter().map(|o| serde_json::to_value(JsonOutPoint::from(*o)).unwrap()).collect();
         self.call("lockunspent", &[true.into(), outputs.into()]).await
     }
 
@@ -713,7 +718,8 @@ pub trait RpcApi: Sized {
         locktime: Option<i64>,
         replaceable: Option<bool>,
     ) -> Result<Transaction> {
-        let hex: String = self.create_raw_transaction_hex(utxos, outs, locktime, replaceable).await?;
+        let hex: String =
+            self.create_raw_transaction_hex(utxos, outs, locktime, replaceable).await?;
         let bytes: Vec<u8> = FromHex::from_hex(&hex)?;
         Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
     }
@@ -723,8 +729,9 @@ pub trait RpcApi: Sized {
         tx: R,
         options: Option<&json::FundRawTransactionOptions>,
         is_witness: Option<bool>,
-    ) -> Result<json::FundRawTransactionResult> 
-    where R: Sync + Send
+    ) -> Result<json::FundRawTransactionResult>
+    where
+        R: Sync + Send,
     {
         let mut args = [tx.raw_hex().into(), opt_into_json(options)?, opt_into_json(is_witness)?];
         let defaults = [empty_obj(), null()];
@@ -738,8 +745,9 @@ pub trait RpcApi: Sized {
         utxos: Option<&[json::SignRawTransactionInput]>,
         private_keys: Option<&[PrivateKey]>,
         sighash_type: Option<json::EcdsaSighashType>,
-    ) -> Result<json::SignRawTransactionResult> 
-    where R: Sync + Send
+    ) -> Result<json::SignRawTransactionResult>
+    where
+        R: Sync + Send,
     {
         let mut args = [
             tx.raw_hex().into(),
@@ -756,8 +764,9 @@ pub trait RpcApi: Sized {
         tx: R,
         utxos: Option<&[json::SignRawTransactionInput]>,
         sighash_type: Option<json::EcdsaSighashType>,
-    ) -> Result<json::SignRawTransactionResult> 
-    where R: Sync + Send
+    ) -> Result<json::SignRawTransactionResult>
+    where
+        R: Sync + Send,
     {
         let mut args = [tx.raw_hex().into(), opt_into_json(utxos)?, opt_into_json(sighash_type)?];
         let defaults = [empty_arr(), null()];
@@ -770,8 +779,9 @@ pub trait RpcApi: Sized {
         privkeys: &[PrivateKey],
         prevtxs: Option<&[json::SignRawTransactionInput]>,
         sighash_type: Option<json::EcdsaSighashType>,
-    ) -> Result<json::SignRawTransactionResult> 
-    where R: Sync + Send
+    ) -> Result<json::SignRawTransactionResult>
+    where
+        R: Sync + Send,
     {
         let mut args = [
             tx.raw_hex().into(),
@@ -786,8 +796,9 @@ pub trait RpcApi: Sized {
     async fn test_mempool_accept<R: RawTx>(
         &self,
         rawtxs: &[R],
-    ) -> Result<Vec<json::TestMempoolAcceptResult>> 
-    where R: Sync + Send
+    ) -> Result<Vec<json::TestMempoolAcceptResult>>
+    where
+        R: Sync + Send,
     {
         let hexes: Vec<serde_json::Value> =
             rawtxs.iter().cloned().map(|r| r.raw_hex().into()).collect();
@@ -834,7 +845,11 @@ pub trait RpcApi: Sized {
 
     /// Mine up to block_num blocks immediately (before the RPC call returns)
     /// to an address in the wallet.
-    async fn generate(&self, block_num: u64, maxtries: Option<u64>) -> Result<Vec<bitcoin::BlockHash>> {
+    async fn generate(
+        &self,
+        block_num: u64,
+        maxtries: Option<u64>,
+    ) -> Result<Vec<bitcoin::BlockHash>> {
         self.call("generate", &[block_num.into(), opt_into_json(maxtries)?]).await
     }
 
@@ -886,7 +901,8 @@ pub trait RpcApi: Sized {
                 &mut args,
                 &["".into(), "".into(), false.into(), false.into(), 6.into(), null()],
             ),
-        ).await
+        )
+        .await
     }
 
     /// Returns data about each connected network node as an array of
@@ -909,8 +925,9 @@ pub trait RpcApi: Sized {
         self.call("ping", &[]).await
     }
 
-    async fn send_raw_transaction<R: RawTx>(&self, tx: R) -> Result<bitcoin::Txid> 
-    where R: Sync + Send
+    async fn send_raw_transaction<R: RawTx>(&self, tx: R) -> Result<bitcoin::Txid>
+    where
+        R: Sync + Send,
     {
         self.call("sendrawtransaction", &[tx.raw_hex().into()]).await
     }
@@ -973,7 +990,8 @@ pub trait RpcApi: Sized {
         self.call(
             "walletcreatefundedpsbt",
             handle_defaults(&mut args, &[0.into(), serde_json::Map::new().into(), false.into()]),
-        ).await
+        )
+        .await
     }
 
     async fn get_descriptor_info(&self, desc: &str) -> Result<json::GetDescriptorInfoResult> {
@@ -984,12 +1002,20 @@ pub trait RpcApi: Sized {
         self.call("combinepsbt", &[into_json(psbts)?]).await
     }
 
-    async fn finalize_psbt(&self, psbt: &str, extract: Option<bool>) -> Result<json::FinalizePsbtResult> {
+    async fn finalize_psbt(
+        &self,
+        psbt: &str,
+        extract: Option<bool>,
+    ) -> Result<json::FinalizePsbtResult> {
         let mut args = [into_json(psbt)?, opt_into_json(extract)?];
         self.call("finalizepsbt", handle_defaults(&mut args, &[true.into()])).await
     }
 
-    async fn derive_addresses(&self, descriptor: &str, range: Option<[u32; 2]>) -> Result<Vec<Address>> {
+    async fn derive_addresses(
+        &self,
+        descriptor: &str,
+        range: Option<[u32; 2]>,
+    ) -> Result<Vec<Address>> {
         let mut args = [into_json(descriptor)?, opt_into_json(range)?];
         self.call("deriveaddresses", handle_defaults(&mut args, &[null()])).await
     }
@@ -1049,10 +1075,7 @@ pub struct Client {
 
 impl fmt::Debug for Client {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "bitcoincore_rpc::Client(jsonrpc::client::Client(last_nonce=?))",
-        )
+        write!(f, "bitcoincore_rpc::Client(jsonrpc::client::Client(last_nonce=?))",)
     }
 }
 
@@ -1061,13 +1084,16 @@ impl Client {
     ///
     /// Can only return [Err] when using cookie authentication.
     pub async fn new(url: String, auth: Auth) -> Result<Self> {
-        let mut client = jsonrpc::simple_http::SimpleHttpTransport::builder().url(&url).await.map_err(|e|Error::JsonRpc(e.into()))?;
+        let mut client = jsonrpc::simple_http::SimpleHttpTransport::builder()
+            .url(&url)
+            .await
+            .map_err(|e| Error::JsonRpc(e.into()))?;
         if let Some((user, pass)) = auth.get_user_pass()? {
             client = client.auth(user, Some(pass));
         }
 
         Ok(Client {
-            client: jsonrpc::client::Client::with_transport(client.build())
+            client: jsonrpc::client::Client::with_transport(client.build()),
         })
     }
 
@@ -1092,7 +1118,10 @@ impl RpcApi for Client {
         cmd: &str,
         args: &[serde_json::Value],
     ) -> Result<T> {
-        let v_args : Vec<_> = args.iter().map(serde_json::value::to_raw_value).collect::<std::result::Result<_,serde_json::Error>>()?;
+        let v_args: Vec<_> = args
+            .iter()
+            .map(serde_json::value::to_raw_value)
+            .collect::<std::result::Result<_, serde_json::Error>>()?;
         let req = self.client.build_request(cmd, &v_args[..]);
         if log_enabled!(Debug) {
             debug!(target: "bitcoincore_rpc", "JSON-RPC request: {} {}", cmd, serde_json::Value::from(args));
@@ -1101,7 +1130,6 @@ impl RpcApi for Client {
         let resp = self.client.send_request(req).await.map_err(Error::from);
         log_response(cmd, &resp);
         Ok(resp?.result()?)
-
     }
 }
 
@@ -1119,7 +1147,8 @@ fn log_response(cmd: &str, resp: &Result<jsonrpc::Response>) {
                         debug!(target: "bitcoincore_rpc", "JSON-RPC error for {}: {:?}", cmd, e);
                     }
                 } else if log_enabled!(Trace) {
-                    let rawnull = serde_json::value::to_raw_value(&serde_json::Value::Null).unwrap();
+                    let rawnull =
+                        serde_json::value::to_raw_value(&serde_json::Value::Null).unwrap();
                     let result = resp.result.as_ref().unwrap_or(&rawnull);
                     trace!(target: "bitcoincore_rpc", "JSON-RPC response for {}: {}", cmd, result);
                 }
