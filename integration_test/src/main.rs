@@ -228,6 +228,8 @@ async fn test_generate(cl: &Client) {
         assert_eq!(blocks.len(), 6);
     } else if version() < 190000 {
         assert_deprecated!(cl.generate(5, None));
+    } else if version() < 210000 {
+        assert_not_found!(cl.generate(5, None));
     } else {
         assert_not_found!(cl.generate(5, None));
     }
