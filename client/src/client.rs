@@ -21,7 +21,6 @@ use serde::*;
 
 use async_trait::async_trait;
 use bitcoin::hashes::hex::{FromHex, ToHex};
-use bitcoin::secp256k1::ecdsa::Signature;
 use bitcoin::{
     Address, Amount, Block, BlockHeader, OutPoint, PrivateKey, PublicKey, Script, Transaction,
 };
@@ -812,7 +811,7 @@ pub trait RpcApi: Sized {
     async fn verify_message(
         &self,
         address: &Address,
-        signature: &Signature,
+        signature: &bitcoin::secp256k1::ecdsa::Signature,
         message: &str,
     ) -> Result<bool> {
         let args = [address.to_string().into(), signature.to_string().into(), into_json(message)?];
