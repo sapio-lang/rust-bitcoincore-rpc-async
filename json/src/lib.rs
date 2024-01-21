@@ -211,6 +211,105 @@ pub struct GetBlockHeaderResult {
     pub next_block_hash: Option<bitcoin::BlockHash>,
 }
 
+/// `getblockstats` RPC call.
+/// https://developer.bitcoin.org/reference/rpc/getblockstats.html
+#[derive(Clone, PartialEq, Eq, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetBlockStatsResult {
+    /// Average fee in the block
+    #[serde(rename = "avgfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub avg_fee: Amount,
+    /// Average feerate (in satoshis per virtual byte)
+    #[serde(rename = "avgfeerate")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub avg_fee_rate: Amount,
+    /// Average transaction size
+    #[serde(rename = "avgtxsize")]
+    pub avg_tx_size: u32,
+    /// The block hash (to check for potential reorgs)
+    #[serde(rename = "blockhash")]
+    pub block_hash: bitcoin::BlockHash,
+    /// Feerates at the 10th, 25th, 50th, 75th, and 90th percentile weight unit (in satoshis per
+    /// virtual byte)
+    #[serde(rename = "feerate_percentiles")]
+    pub fee_rate_percentiles: [u8; 5],
+    /// The height of the block
+    pub height: u64,
+    /// The number of inputs (excluding coinbase)
+    pub ins: usize,
+    /// Maximum fee in the block
+    #[serde(rename = "maxfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub max_fee: Amount,
+    /// Maximum feerate (in satoshis per virtual byte)
+    #[serde(rename = "maxfeerate")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub max_fee_rate: Amount,
+    /// Maximum transaction size
+    #[serde(rename = "maxtxsize")]
+    pub max_tx_size: u32,
+    /// Truncated median fee in the block
+    #[serde(rename = "medianfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub median_fee: Amount,
+    /// The block median time past
+    #[serde(rename = "mediantime")]
+    pub median_time: u64,
+    /// Truncated median transaction size
+    #[serde(rename = "mediantxsize")]
+    pub median_tx_size: u32,
+    /// Minimum fee in the block
+    #[serde(rename = "minfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub min_fee: Amount,
+    /// Minimum feerate (in satoshis per virtual byte)
+    #[serde(rename = "minfeerate")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub min_fee_rate: Amount,
+    /// Minimum transaction size
+    #[serde(rename = "mintxsize")]
+    pub min_tx_size: u32,
+    /// The number of outputs
+    pub outs: usize,
+    /// The block subsidy
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub subsidy: Amount,
+    /// Total size of all segwit transactions
+    #[serde(rename = "swtotal_size")]
+    pub sw_total_size: usize,
+    /// Total weight of all segwit transactions
+    #[serde(rename = "swtotal_weight")]
+    pub sw_total_weight: usize,
+    /// The number of segwit transactions
+    #[serde(rename = "swtxs")]
+    pub sw_txs: usize,
+    /// The block time
+    pub time: u64,
+    /// Total amount in all outputs (excluding coinbase and thus reward [ie subsidy + totalfee])
+    #[serde(rename = "total_out")]
+    // #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub total_out: usize,
+    /// Total size of all non-coinbase transactions
+    #[serde(rename = "total_size")]
+    pub total_size: usize,
+    /// Total weight of all non-coinbase transactions
+    #[serde(rename = "total_weight")]
+    pub total_weight: usize,
+    /// The fee total
+    #[serde(rename = "totalfee")]
+    #[serde(with = "bitcoin::util::amount::serde::as_btc")]
+    pub total_fee: Amount,
+    /// The number of transactions (including coinbase)
+    pub txs: usize,
+    /// The increase/decrease in the number of unspent outputs
+    #[serde(rename = "utxo_increase")]
+    pub utxo_increase: i32,
+    /// The increase/decrease in size for the
+    #[serde(rename = "utxo_size_inc")]
+    pub utxo_size_inc: i32,
+}
+
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetMiningInfoResult {
